@@ -52,7 +52,7 @@ def train():
         model.train()
         total_loss = 0
         
-        for audio_emb, img_emb in tqdm(train_loader, desc=f\"Epoch {epoch+1}/{epochs}\", leave=False):
+        for audio_emb, img_emb in tqdm(train_loader, desc=f"Epoch {epoch+1}/{epochs}", leave=False):
             audio_emb, img_emb = audio_emb.to(device), img_emb.to(device)
             
             optimizer.zero_grad()
