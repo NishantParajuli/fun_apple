@@ -21,12 +21,10 @@ class BlindPainterMapper(nn.Module):
         )
         
     def forward(self, x):
-        # Normalize input (Audio Embeddings are usually normalized, but good practice)
         x = x / x.norm(dim=-1, keepdim=True)
         return self.net(x)
 
 if __name__ == "__main__":
-    # Quick test
     model = BlindPainterMapper()
     dummy_input = torch.randn(2, 512)
     output = model(dummy_input)

@@ -9,11 +9,7 @@ def add_visuals(input_video, output_video):
     """
     print(f"Processing {input_video} -> {output_video}")
     
-    # Complex filter:
-    # 1. Generate waveform from audio [sw]
-    # 2. Overlay [sw] on top of video [v] at bottom
-    # colors=white, mode=line, s=width x 100 height
-    
+
     cmd = [
         "ffmpeg", "-y",
         "-i", input_video,

@@ -24,14 +24,12 @@ def train():
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print(f"Training on {device}")
     
-    # Load Data
     dataset_path = "models/embeddings.pt"
     if not os.path.exists(dataset_path):
         print(f"Error: {dataset_path} not found.")
         return
 
     dataset = EmbeddingDataset(dataset_path)
-    # Split
     train_size = int(0.9 * len(dataset))
     val_size = len(dataset) - train_size
     train_ds, val_ds = torch.utils.data.random_split(dataset, [train_size, val_size])
@@ -39,12 +37,10 @@ def train():
     train_loader = DataLoader(train_ds, batch_size=32, shuffle=True)
     val_loader = DataLoader(val_ds, batch_size=32, shuffle=False)
     
-    # Model
     model = BlindPainterMapper().to(device)
     optimizer = optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-4)
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5)
     
-    # Loss: We want the predicted vector to align with the target vector
     criterion = nn.CosineEmbeddingLoss()
     
     epochs = 100
@@ -62,7 +58,6 @@ def train():
             optimizer.zero_grad()
             pred_emb = model(audio_emb)
             
-            # Target is 1.0 (maximize similarity)
             target = torch.ones(audio_emb.size(0)).to(device)
             loss = criterion(pred_emb, img_emb, target)
             
@@ -72,7 +67,6 @@ def train():
             
         avg_loss = total_loss / len(train_loader)
         
-        # Validation
         model.eval()
         val_loss = 0
         with torch.no_grad():
@@ -94,7 +88,6 @@ def train():
             torch.save(model.state_dict(), "models/mapper_best.pth")
             
     print(f"Training Complete. Best Val Loss: {best_val_loss:.4f}")
-    print("Model saved to models/mapper_best.pth")
 
 if __name__ == "__main__":
     train()
