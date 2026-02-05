@@ -26,9 +26,9 @@ def generate_embeddings(dataset_dir="data/dataset", output_file="models/embeddin
     audio_files = sorted(glob.glob(os.path.join(dataset_dir, "audio", "*.wav")))
     
     if len(frame_files) == 0:
-        raise ValueError("No data found! Run extract_data.py first.")
+        raise ValueError("No data found")
     if len(frame_files) != len(audio_files):
-        print(f"Warning: Mismatch in file counts. Frames: {len(frame_files)}, Audio: {len(audio_files)}")
+        print(f"Warning Mismatch of frame  {len(frame_files)} audio {len(audio_files)}")
         min_len = min(len(frame_files), len(audio_files))
         frame_files = frame_files[:min_len]
         audio_files = audio_files[:min_len]
@@ -36,7 +36,7 @@ def generate_embeddings(dataset_dir="data/dataset", output_file="models/embeddin
     image_embeddings = []
     audio_embeddings = []
 
-    print(f"Processing {len(frame_files)} pairs...")
+    print(f"Processing {len(frame_files)}")
 
     for i in tqdm(range(0, len(frame_files), batch_size)):
         batch_frames = frame_files[i : i + batch_size]
@@ -45,7 +45,6 @@ def generate_embeddings(dataset_dir="data/dataset", output_file="models/embeddin
         images = [Image.open(f) for f in batch_frames]
         with torch.no_grad():
             inputs = clip_processor(images=images, return_tensors="pt", padding=True).to(device)
-            # visual_projection gives the implementation-generic "clip embedding" (768 dim for ViT-L/14)
             outputs = clip_model(**inputs)
             img_embeds = outputs.image_embeds # [B, 768]
             image_embeddings.append(img_embeds.cpu())
@@ -61,11 +60,10 @@ def generate_embeddings(dataset_dir="data/dataset", output_file="models/embeddin
             if isinstance(outputs, torch.Tensor):
                 aud_embeds = outputs
             else:
-                print(f"DEBUG TYPE: {type(outputs)}")
+                print({type(outputs)})
                 if hasattr(outputs, "pooler_output"):
                     aud_embeds = outputs.pooler_output
                 elif hasattr(outputs, "last_hidden_state"):
-                     # This might not be projected
                      aud_embeds = outputs.last_hidden_state[:, 0, :]
                 else:
                     aud_embeds = outputs[0]

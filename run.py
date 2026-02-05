@@ -27,7 +27,6 @@ def main():
         print(f"Unknown mode: {mode}. Available: {list(module_map.keys())}")
         return
 
-    # Run the module using python -m
     cmd = [sys.executable, "-m", module_map[mode]] + args
     try:
         subprocess.run(cmd, check=True)
