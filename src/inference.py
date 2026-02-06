@@ -164,7 +164,8 @@ def inference(audio_path, mapper_path="models/mapper_best.pth", output_video="ou
         
     video_writer.release()
     
-    os.system(f"ffmpeg -y -i output/temp_video.mp4 -i {audio_path} -c:v copy -c:a aac -shortest {output_video}")
+    final_duration = total_frames / fps
+    os.system(f"ffmpeg -y -i output/temp_video.mp4 -i {audio_path} -c:v copy -c:a aac -t {final_duration} {output_video}")
     print(f"{output_video}")
 
 if __name__ == "__main__":

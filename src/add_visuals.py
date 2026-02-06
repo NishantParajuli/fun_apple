@@ -10,6 +10,19 @@ def add_visuals(input_video, output_video):
     print(f"Processing {input_video} -> {output_video}")
     
 
+    # Get duration of video stream
+    cmd_dur = [
+        "ffprobe", "-v", "error", "-select_streams", "v:0",
+        "-show_entries", "stream=duration", "-of", "default=noprint_wrappers=1:nokey=1",
+        input_video
+    ]
+    result = subprocess.run(cmd_dur, capture_output=True, text=True)
+    try:
+        duration = float(result.stdout.strip())
+    except ValueError:
+        print("Warning: Could not determine video duration, fallback to copy full audio.")
+        duration = None
+
     cmd = [
         "ffmpeg", "-y",
         "-i", input_video,
@@ -18,9 +31,13 @@ def add_visuals(input_video, output_video):
         "-map", "[v]",
         "-map", "0:a",
         "-c:v", "libx264",
-        "-c:a", "copy",
-        output_video
+        "-c:a", "copy"
     ]
+    
+    if duration:
+        cmd.extend(["-t", str(duration)])
+        
+    cmd.append(output_video)
     
     subprocess.run(cmd, check=True)
     print("Done!")
