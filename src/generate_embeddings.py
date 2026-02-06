@@ -74,6 +74,7 @@ def generate_embeddings(dataset_dir="data/dataset", output_file="models/embeddin
     all_aud_emb = torch.cat(audio_embeddings, dim=0)
     
     print(f"Saving embeddings: Audio {all_aud_emb.shape}, Image {all_img_emb.shape}")
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
     torch.save({
         "audio_embeddings": all_aud_emb,
         "image_embeddings": all_img_emb,

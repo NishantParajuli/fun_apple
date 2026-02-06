@@ -85,7 +85,9 @@ def train():
             
         if avg_val_loss < best_val_loss:
             best_val_loss = avg_val_loss
-            torch.save(model.state_dict(), "models/mapper_best.pth")
+            save_path = "models/mapper_best.pth"
+            os.makedirs(os.path.dirname(save_path), exist_ok=True)
+            torch.save(model.state_dict(), save_path)
             
     print(f"Training Complete. Best Val Loss: {best_val_loss:.4f}")
 

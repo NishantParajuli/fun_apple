@@ -14,6 +14,9 @@ from .mapper_model import BlindPainterMapper
 import soundfile as sf
 
 def inference(audio_path, mapper_path="models/mapper_best.pth", output_video="output/output.mp4", max_frames=None):
+    os.makedirs(os.path.dirname(output_video), exist_ok=True)
+    if os.path.dirname(mapper_path):
+        os.makedirs(os.path.dirname(mapper_path), exist_ok=True)
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print(f"Using device: {device}")
     
